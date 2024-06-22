@@ -1,7 +1,7 @@
 use clap::error::{Error, ErrorKind};
 use regex::Regex;
 
-use crate::{map::Map, rover::Rover};
+use crate::{enums::instruction::{self, Instruction}, map::Map, rover::Rover};
 
 /// check the first instruction line and return the map associate
 pub fn extract_first_instruction(instruction: String) -> Result<Map, Error> {
@@ -33,7 +33,7 @@ pub fn extract_first_instruction(instruction: String) -> Result<Map, Error> {
 }
 
 /// execute the rover's instruction and return a tupple who contains the Rover struct and the rover output string (once the rover has execute the instructions)
-pub fn extract_rover_instruction(instruction: String, map: Map) -> Result<(Rover, String), Error> {
+pub fn extract_rover_instruction(instruction: String, map: Map) -> Result<(Rover, Vec<Instruction>), Error> {
     let re = regex::Regex::new(r"\((\d+), (\d+), ([NSEW])\) ([LRF]+)").unwrap();
     if let Some(caps) = re.captures(&instruction) {
         let x = caps
@@ -62,13 +62,13 @@ pub fn extract_rover_instruction(instruction: String, map: Map) -> Result<(Rover
             .get(4)
             .ok_or("Failed to capture actions")
             .unwrap()
-            .as_str()
-            .to_string();
+            .as_str();
+        let instructions = Instruction::from_instructions_str(actions);
         let rover = match Rover::new(map, x, y, direction.to_string()) {
             Err(e) => return Err(e),
             Ok(rover) => rover,
         };
-        return Ok((rover, actions));
+        return Ok((rover, instructions));
     };
     Err(Error::new(ErrorKind::InvalidValue))
 }

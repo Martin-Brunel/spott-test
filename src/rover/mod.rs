@@ -2,7 +2,10 @@ use std::str::FromStr;
 
 use clap::error::{Error, ErrorKind};
 
-use crate::{enums::Orientation, map::Map};
+use crate::{
+    enums::{instruction::Instruction, orientation::Orientation},
+    map::Map,
+};
 
 #[derive(Debug)]
 pub struct Rover {
@@ -34,41 +37,32 @@ impl Rover {
     }
 
     /// Execute Rover instructions
-    pub fn do_instructions(&mut self, instructions: String) {
-        let letters: Vec<char> = instructions.chars().filter(|c| c.is_alphabetic()).collect();
-        for letter in letters {
-            match letter.to_string().as_str() {
-                "L" => self.orientation_change("L".to_string()),
-                "R" => self.orientation_change("R".to_string()),
-                "F" => self.forward(),
-                _ => {}
+    pub fn do_instructions(&mut self, instructions: Vec<Instruction>) {
+        for instruction in instructions {
+            match instruction {
+                Instruction::L => self.orientation_change(instruction),
+                Instruction::R => self.orientation_change(instruction),
+                Instruction::F => self.forward(),
             }
         }
     }
 
     /// Change Rover orientation
-    fn orientation_change(&mut self, instruction: String) {
+    fn orientation_change(&mut self, instruction: Instruction) {
         if self.is_lost {
             return;
         }
-        let deg: i16 = match self.orientation {
-            Orientation::E => 90,
-            Orientation::S => 180,
-            Orientation::W => 270,
-            Orientation::N => 0,
+        let deg: i16 = self.orientation.to_deg();
+
+        let new_orientation_deg = match instruction {
+            Instruction::L => (deg + 270) % 360,
+            Instruction::R => (deg + 90) % 360,
+            Instruction::F => return,
         };
-        let new_orientation_deg = match instruction.as_str() {
-            "L" => (deg + 270) % 360,
-            "R" => (deg + 90) % 360,
-            _ => deg,
+        self.orientation = match Orientation::from_deg(new_orientation_deg) {
+            Err(_) => self.orientation.clone(),
+            Ok(orientation) => orientation,
         };
-        self.orientation = match new_orientation_deg {
-            0 => Orientation::N,
-            90 => Orientation::E,
-            180 => Orientation::S,
-            270 => Orientation::W,
-            _ => self.orientation.clone(),
-        }
     }
 
     /// Move the Rover forward
@@ -82,6 +76,7 @@ impl Rover {
             Orientation::E => (self.x + 1, self.y),
             Orientation::W => (self.x - 1, self.y),
         };
+
         match self.map.not_lost(new_pos.0, new_pos.1) {
             false => {
                 self.x = new_pos.0;
