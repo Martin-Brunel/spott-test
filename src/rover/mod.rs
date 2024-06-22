@@ -1,12 +1,8 @@
-use std::fmt::format;
+use std::str::FromStr;
 
-use clap::Error;
+use clap::error::{Error, ErrorKind};
 
-use crate::{
-    enums::Orientation,
-    map::Map,
-    utils::{orientation_to_string, string_to_orientation},
-};
+use crate::{enums::Orientation, map::Map};
 
 #[derive(Debug)]
 pub struct Rover {
@@ -24,8 +20,8 @@ pub struct Rover {
 
 impl Rover {
     pub fn new(map: Map, x: i32, y: i32, orientation_string: String) -> Result<Self, Error> {
-        let orientation = match string_to_orientation(&orientation_string) {
-            Err(e) => return Err(e),
+        let orientation = match Orientation::from_str(&orientation_string) {
+            Err(_) => return Err(Error::new(ErrorKind::InvalidValue)),
             Ok(orientation) => orientation,
         };
         Ok(Self {
@@ -37,6 +33,7 @@ impl Rover {
         })
     }
 
+    /// Execute Rover instructions
     pub fn do_instructions(&mut self, instructions: String) {
         let letters: Vec<char> = instructions.chars().filter(|c| c.is_alphabetic()).collect();
         for letter in letters {
@@ -49,6 +46,7 @@ impl Rover {
         }
     }
 
+    /// Change Rover orientation
     fn orientation_change(&mut self, instruction: String) {
         if self.is_lost {
             return;
@@ -60,14 +58,8 @@ impl Rover {
             Orientation::N => 0,
         };
         let new_orientation_deg = match instruction.as_str() {
-            "L" => match deg - 90 {
-                -90 => 270,
-                _ => deg - 90,
-            },
-            "R" => match deg + 90 {
-                360 => 360,
-                _ => deg + 90,
-            },
+            "L" => (deg + 270) % 360,
+            "R" => (deg + 90) % 360,
             _ => deg,
         };
         self.orientation = match new_orientation_deg {
@@ -79,6 +71,7 @@ impl Rover {
         }
     }
 
+    /// Move the Rover forward
     fn forward(&mut self) {
         if self.is_lost {
             return;
@@ -98,8 +91,9 @@ impl Rover {
         }
     }
 
+    /// Return the Rover output string
     pub fn output(&self) -> String {
-        let orientation = orientation_to_string(self.orientation.clone());
+        let orientation = self.orientation.orientation_to_string();
         let lost_string = match self.is_lost {
             false => format!(""),
             true => format!(" LOST"),

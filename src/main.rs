@@ -6,7 +6,6 @@ pub mod rover;
 pub mod tests;
 pub mod utils;
 
-/// Structure définissant les arguments de la ligne de commande
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -15,6 +14,11 @@ struct Args {
 }
 
 impl Args {
+
+    /// Main function:
+    /// - catch the first line instruction and return the Map
+    /// - for each other lines execute rover instruction and return the output in a Vec
+    /// 
     pub fn execute(instructions: String) -> Result<Vec<String>, Error> {
         let mut instructions = instructions.split("\n").collect::<Vec<&str>>();
         let first_instruction = instructions[0];

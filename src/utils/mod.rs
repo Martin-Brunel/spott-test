@@ -1,29 +1,9 @@
-use std::string;
-
 use clap::error::{Error, ErrorKind};
 use regex::Regex;
 
-use crate::{enums::Orientation, map::Map, rover::Rover};
+use crate::{map::Map, rover::Rover};
 
-pub fn string_to_orientation(string: &str) -> Result<Orientation, Error> {
-    match string {
-        "N" => Ok(Orientation::N),
-        "S" => Ok(Orientation::S),
-        "W" => Ok(Orientation::W),
-        "E" => Ok(Orientation::E),
-        _ => Err(Error::new(ErrorKind::InvalidValue)),
-    }
-}
-
-pub fn orientation_to_string(orientation: Orientation) -> String {
-    match orientation {
-        Orientation::N => format!("N"),
-        Orientation::E => format!("E"),
-        Orientation::S => format!("S"),
-        Orientation::W => format!("W"),
-    }
-}
-
+/// check the first instruction line and return the map associate
 pub fn extract_first_instruction(instruction: String) -> Result<Map, Error> {
     let re = Regex::new(r"^\s*(\d+)\s+(\d+)\s*$")
         .map_err(|_| "Invalid regex")
@@ -52,6 +32,7 @@ pub fn extract_first_instruction(instruction: String) -> Result<Map, Error> {
     Err(Error::new(ErrorKind::InvalidValue))
 }
 
+/// execute the rover's instruction and return a tupple who contains the Rover struct and the rover output string (once the rover has execute the instructions)
 pub fn extract_rover_instruction(instruction: String, map: Map) -> Result<(Rover, String), Error> {
     let re = regex::Regex::new(r"\((\d+), (\d+), ([NSEW])\) ([LRF]+)").unwrap();
     if let Some(caps) = re.captures(&instruction) {

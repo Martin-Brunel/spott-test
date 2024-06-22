@@ -2,8 +2,6 @@
 mod tests {
     use crate::{map::Map, rover::Rover, Args};
 
-    use super::*;
-
     #[test]
     fn rover_1_instructions() {
         let map = Map::new(4, 8);
