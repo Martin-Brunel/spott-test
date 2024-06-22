@@ -22,9 +22,9 @@ impl FromStr for Orientation {
     }
 }
 
-impl Orientation {
+impl ToString for Orientation {
     /// Transform Orientation Value to the associate String
-    pub fn orientation_to_string(&self) -> String {
+    fn to_string(&self) -> String {
         match self {
             Orientation::N => format!("N"),
             Orientation::E => format!("E"),

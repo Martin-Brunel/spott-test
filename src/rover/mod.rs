@@ -93,7 +93,7 @@ impl Rover {
 
     /// Return the Rover output string
     pub fn output(&self) -> String {
-        let orientation = self.orientation.orientation_to_string();
+        let orientation = self.orientation.to_string();
         let lost_string = match self.is_lost {
             false => format!(""),
             true => format!(" LOST"),
