@@ -23,6 +23,7 @@ impl FromStr for Instruction {
 }
 
 impl Instruction {
+    /// tranform a string to a vec of instruction by parsing it
     pub fn from_instructions_str(actions: &str) -> Vec<Self> {
         let mut acc = vec![];
         let letters: Vec<char> = actions.chars().filter(|c| c.is_alphabetic()).collect();

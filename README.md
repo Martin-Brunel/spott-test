@@ -29,3 +29,12 @@ cargo run -- --instructions "4 8
 (2, 3, E) LFRFF
 (0, 2, N) FFLFRFF"
 ```
+
+## Testing the Project
+To run the automated tests, use the following command:
+
+```bash
+cargo test
+```
+
+This command will compile and run all the tests defined in the project, ensuring that everything is working as expected.

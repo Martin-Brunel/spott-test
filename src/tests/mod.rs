@@ -1,6 +1,9 @@
 #[cfg(test)]
 mod tests {
-    use crate::{enums::instruction::Instruction, map::Map, rover::Rover, Args};
+    use crate::{
+        entities::{args::Args, map::Map, rover::Rover},
+        enums::instruction::Instruction,
+    };
 
     #[test]
     fn rover_1_instructions() {

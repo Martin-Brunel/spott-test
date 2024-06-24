@@ -4,7 +4,7 @@ use clap::error::{Error, ErrorKind};
 
 use crate::{
     enums::{instruction::Instruction, orientation::Orientation},
-    map::Map,
+    entities::map::Map,
 };
 
 #[derive(Debug)]
