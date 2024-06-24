@@ -52,7 +52,9 @@ fn main() -> Result<(), Error> {
             Err(e) => return Err(e),
             Ok(output) => output,
         };
-
+        println!("===========================");
+        println!("OUTPUT");
+        println!("===========================");
         for res in output {
             println!("{}", res)
         }
